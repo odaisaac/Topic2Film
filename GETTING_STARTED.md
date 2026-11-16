@@ -97,7 +97,21 @@ python tale/kvo.py films/napoleon --speed 0.83
 
 Voices: `am_michael` (default), `am_fenrir`, `am_onyx`, `bm_george` (British), `af_heart` (female) and more. `--speed 0.83` is a calm pace for learners; 1.0 is normal.
 
-**Google voices (Gemini, free key):** the same voices as "Generate speech" in Google AI Studio.
+**Google voices in AI Studio (free, no key, recommended):** the "Generate speech" voices, driven in your browser like the pictures.
+
+```
+python tale/aistudio.py snippet films/napoleon
+```
+
+1. Open https://aistudio.google.com/generate-speech and sign in, then click **Create new dialog**.
+2. In the speech block, pick the voice (**Speaker**) and **Style** you want. Optional: "Run settings" (top right) for the model.
+3. Press **F12**, click **Console**, paste all of `films/napoleon/aistudio-snippet.js`, press **Enter**.
+4. Leave the tab open and in front. Each paragraph takes about 10 seconds; every 25 recordings a zip downloads (`napoleon-voice-01.zip`, ...). If it stops, paste it again: finished parts are skipped.
+5. Import: `python tale/aistudio.py import films/napoleon ~/Downloads/napoleon-voice-*.zip`
+
+Add `--mode chapter` to the snippet command to record a whole chapter per run (fewer runs); the import then splits each chapter into paragraphs at the pauses. It is usually exact, but listen to a few files to be sure.
+
+**Google voices with an API key:** the same voices, without the browser.
 
 1. Get a key at https://aistudio.google.com/apikey and add it with `python setup.py --keys`.
 2. Run:

@@ -85,7 +85,9 @@ python tale/images.py prompts FILM                # prompts.txt: one picture des
 python tale/images.py snippet FILM                # gemini-snippet.js: paste into the Gemini page, pictures arrive as zips
 python tale/images.py import FILM *.zip --host local/host.jpg
 python tale/kvo.py FILM --speed 0.83              # free narration (Kokoro), or:
-python tale/gvo.py FILM --voice Charon            # Google Gemini voices (free AI Studio key), or:
+python tale/aistudio.py snippet FILM               # Google voices in AI Studio, free, no key (paste into the page), then:
+python tale/aistudio.py import FILM *-voice-*.zip  # or:
+python tale/gvo.py FILM --voice Charon            # Google voices with an API key, or:
 python tale/tale.py vo FILM --voice VOICE_ID      # ElevenLabs
 python tale/tale.py build FILM                    # final.mp4 + chapters.txt
 ```
@@ -101,5 +103,5 @@ python tale/tale.py build FILM                    # final.mp4 + chapters.txt
 - Code: MIT, see `LICENSE`.
 - Fonts in `video/public/fonts`: SIL Open Font License 1.1, see `video/public/fonts/LICENSE.md`.
 - Remotion has its own licence: free for individuals and small teams, but some companies need a paid company licence. Check https://www.remotion.dev/license before using this commercially.
-- Kokoro is Apache 2.0. Google (Gemini, AI Studio), ElevenLabs, Pexels, Pixabay and Coverr have their own terms; follow them and their attribution rules. The Gemini picture snippet automates your own signed-in Gemini page; use it within Google's terms.
+- Kokoro is Apache 2.0. Google (Gemini, AI Studio), ElevenLabs, Pexels, Pixabay and Coverr have their own terms; follow them and their attribution rules. The Gemini picture and AI Studio voice snippets automate your own signed-in Google pages; use them within Google's terms.
 - Disclose AI-generated narration and images where your platform asks for it.
