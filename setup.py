@@ -44,10 +44,42 @@ def yes(q, default=True):
 
 def pip_install(pkgs):
     base = [sys.executable, "-m", "pip", "install", "--disable-pip-version-check", "-q"] + pkgs
-    r = subprocess.run(base)
-    if r.returncode and OS == "Linux":              # system Python on newer Linux needs this flag
-        r = subprocess.run(base + ["--break-system-packages"])
-    return r.returncode == 0
+    attempts = [base, base + ["--index-url", "https://pypi.org/simple"]]   # second try ignores a custom package index
+    if OS == "Linux":                              # system Python on newer Linux needs this flag
+        attempts.insert(1, base + ["--break-system-packages"])
+    for cmd in attempts:
+        if subprocess.run(cmd).returncode == 0:
+            return True
+    return False
+
+
+def diagnose_pip():
+    """Explain why pip found no packages at all ("from versions: none")."""
+    import struct, ssl
+    bits = struct.calcsize("P") * 8
+    if bits != 64:
+        warn(f"this is a {bits}-bit Python. The video packages need 64-bit Python: uninstall it and install the "
+             "64-bit version from https://www.python.org/downloads/ (Windows installer (64-bit)).")
+        return
+    try:
+        urllib.request.urlopen("https://pypi.org/simple/numpy/", timeout=20).read(200)
+        reach = "ok"
+    except ssl.SSLError as e:
+        reach = f"security certificate problem ({e.__class__.__name__})"
+    except Exception as e:
+        reach = f"cannot connect ({e})"
+    if reach != "ok":
+        warn("Python cannot reach the package site pypi.org: " + reach)
+        warn("Check the internet connection, then turn off any VPN, proxy or antivirus 'web shield' and run setup again.")
+        warn("On a work or school network, ask the admin to allow pypi.org and files.pythonhosted.org.")
+    else:
+        warn("pypi.org is reachable, so pip may be set to use another package index. Its settings:")
+        out = subprocess.run([sys.executable, "-m", "pip", "config", "list"], capture_output=True, text=True).stdout.strip()
+        print("      " + (out.replace("\n", "\n      ") or "(none)"))
+        for k in ("PIP_INDEX_URL", "PIP_EXTRA_INDEX_URL", "HTTPS_PROXY", "HTTP_PROXY"):
+            if os.environ.get(k):
+                print(f"      {k}={os.environ[k]}")
+    warn("Then update pip and run setup again:  " + sys.executable + " -m pip install --upgrade pip")
 
 
 def check_python():
@@ -78,7 +110,8 @@ def install_tale():
     if pip_install(TALE_PKGS):
         ok(", ".join(TALE_PKGS))
     else:
-        warn("pip could not install everything. Try:  " + sys.executable + " -m pip install " + " ".join(TALE_PKGS))
+        warn("pip could not install the packages.")
+        diagnose_pip()
 
 
 def make_fonts():
