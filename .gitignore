@@ -1,0 +1,21 @@
+node_modules/
+video/public/film
+video/public/thumb_face.jpg
+video/src/spec.json
+video/src/timing.json
+*.mp4
+*.m4a
+*.wav
+__pycache__/
+video/public/thumb_*.jpg
+assets/sfx/*.mp3
+video/public/thumb_*.png
+
+# Your own things: never uploaded
+.env
+models/
+films/
+local/
+tale/fonts/
+*.zip
+gemini-snippet.js
