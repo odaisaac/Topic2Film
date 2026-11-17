@@ -187,6 +187,8 @@ def write_env(d):
              f"T2F_GEMINI_VOICE={d.get('T2F_GEMINI_VOICE', 'Charon')}",
              f"T2F_GEMINI_TTS_MODEL={d.get('T2F_GEMINI_TTS_MODEL', 'gemini-3.8-flash-tts')}",
              f"T2F_IMAGE_STYLE={d.get('T2F_IMAGE_STYLE', 'oil')}",
+             "# Optional recurring invented main character for every picture (one sentence)",
+             f"T2F_CHARACTER={d.get('T2F_CHARACTER', '')}",
              "# Optional background music file for story videos, e.g. local/music/calm.mp3",
              f"T2F_MUSIC={d.get('T2F_MUSIC', '')}", ""]
     open(ENV, "w", encoding="utf-8").write("\n".join(lines))

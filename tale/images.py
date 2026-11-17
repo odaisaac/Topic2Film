@@ -2,7 +2,8 @@
 """Pictures for tale mode: one per paragraph, made in Gemini in your browser.
 
   python tale/images.py prompts FILM            write FILM/prompts.txt (one line per picture) and FILM/ai-helper.txt
-  python tale/images.py snippet FILM [--style oil|watercolour|storybook|photo|"your own style line"]
+  python tale/images.py snippet FILM [--style oil|watercolour|storybook|photo|paper|comic|"your own style line"]
+                                   [--character "one sentence describing a recurring invented main character"]
                                                 write FILM/gemini-snippet.js to paste into the Gemini page
   python tale/images.py import FILM ZIP [ZIP ...] [--host PICTURE]
                                                 unpack the downloaded zips into FILM/img/ and report anything missing
@@ -23,13 +24,27 @@ STYLES = {
     "watercolour": "A soft ink and watercolour illustration on cream paper, fine pen lines and gentle washes of colour.",
     "storybook": "A warm, detailed children's storybook illustration with soft light and rich colours.",
     "photo": "A cinematic documentary photograph, natural light, shallow depth of field, realistic detail.",
+    "paper": "A hand-drawn cartoon illustration in the style of a satirical newspaper drawing on warm textured paper, "
+             "bold black ink outlines, flat bright colours with soft shading, big expressive exaggerated faces and reactions, "
+             "one clear focal subject, cinematic lighting.",
+    "comic": "A bold modern comic-book panel, thick ink lines, halftone shading, dramatic angles and strong colour contrast.",
 }
+NO_REAL = (" All people are invented characters, not real or famous people; never draw a likeness of a real person, "
+           "company logo or brand mark.")
 FRAME = (" The picture fills the entire frame edge to edge with no border, no frame, no paper margin, "
          "no text and no letters. Scene: ")
 
 
-def style_line(s):
-    return "Generate an image, wide 16:9 landscape. " + STYLES.get(s, s).rstrip() + FRAME
+def style_line(s, character=""):
+    """character: one sentence describing a recurring invented main character, so every picture shows the same
+    person (for example "a round-faced businessman in his fifties with grey hair, big glasses and a black leather jacket")."""
+    line = "Generate an image, wide 16:9 landscape. " + STYLES.get(s, s).rstrip()
+    if s in ("paper", "comic") or character:
+        line += NO_REAL
+    if character:
+        line += (" The recurring main character, drawn exactly the same in every picture whenever the scene includes him or her: "
+                 + character.rstrip(". ") + ".")
+    return line + FRAME
 
 
 def read_prompts(film):
@@ -73,11 +88,11 @@ def cmd_prompts(film, force):
     print(f"Tip: paste {film}/ai-helper.txt into ChatGPT or Gemini and save its answer as {p}")
 
 
-def cmd_snippet(film, style):
+def cmd_snippet(film, style, character=""):
     prompts = read_prompts(film)
     tpl = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "browser", "gemini-images.js"), encoding="utf-8").read()
     slug = re.sub(r"[^a-z0-9-]+", "-", os.path.basename(os.path.abspath(film)).lower()).strip("-") or "film"
-    js = (tpl.replace('"__FILM__"', json.dumps(slug)).replace("__STYLE__", json.dumps(style_line(style)))
+    js = (tpl.replace('"__FILM__"', json.dumps(slug)).replace("__STYLE__", json.dumps(style_line(style, character)))
              .replace("__PROMPTS__", json.dumps(prompts, ensure_ascii=False)))
     out = f"{film}/gemini-snippet.js"
     open(out, "w", encoding="utf-8").write(js)
@@ -118,12 +133,13 @@ def cmd_import(film, zips, host):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=["prompts", "snippet", "import"]); ap.add_argument("film"); ap.add_argument("zips", nargs="*")
-    ap.add_argument("--style", default=None); ap.add_argument("--host"); ap.add_argument("--force", action="store_true")
+    ap.add_argument("--style", default=None); ap.add_argument("--character", default=None); ap.add_argument("--host"); ap.add_argument("--force", action="store_true")
     a = ap.parse_args()
     env.load_env()
     a.style = a.style or os.environ.get("T2F_IMAGE_STYLE") or "oil"
+    a.character = a.character if a.character is not None else os.environ.get("T2F_CHARACTER", "")
     if a.cmd == "prompts": cmd_prompts(a.film, a.force)
-    elif a.cmd == "snippet": cmd_snippet(a.film, a.style)
+    elif a.cmd == "snippet": cmd_snippet(a.film, a.style, a.character)
     else:
         if not a.zips: sys.exit("give the zip files to import")
         cmd_import(a.film, a.zips, a.host)

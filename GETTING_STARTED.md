@@ -68,7 +68,7 @@ Then make the browser script:
 python tale/images.py snippet films/napoleon
 ```
 
-(Add `--style watercolour`, `--style storybook`, `--style photo`, or your own style sentence in quotes. The default is classical oil painting. You can set your favourite in `.env` as `T2F_IMAGE_STYLE`.)
+(Add `--style watercolour`, `--style storybook`, `--style photo`, `--style paper` (cartoon on paper), `--style comic`, or your own style sentence in quotes. Add `--character "a round-faced old shopkeeper with a red scarf"` to keep the same invented main character in every picture. The default is classical oil painting. You can set your favourite in `.env` as `T2F_IMAGE_STYLE`.)
 
 Now:
 
@@ -145,7 +145,8 @@ A 23-minute video takes about 30 to 60 minutes to build, depending on your compu
 
 - Title: topic first, then the type, e.g. `Napoleon: The Soldier Who Crowned Himself Emperor | English Listening Practice`.
 - Description: one line with your main search words, a short summary, then `chapters.txt`.
-- Thumbnail: use `thumb_src.jpg` (made with your pictures) and add 2 to 4 big words.
+- Thumbnail: `python tale/thumb.py films/napoleon --top "The soldier who" --big "Crowned Himself" --pill "Learn English"` makes it from `thumb_src.jpg`. Try `--layout brand` or `--layout money` for a second one and run both in Test & Compare.
+- Check your title ideas: `python tools/titlecheck.py "Title one" "Title two"`. A question, a number and a strong word usually win.
 - Say in the description that the pictures and voice are AI-made.
 - Category Education, video language set, "not made for kids" if true.
 - New channels must verify a phone number before uploading videos over 15 minutes.

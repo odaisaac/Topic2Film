@@ -90,7 +90,13 @@ python tale/aistudio.py import FILM *-voice-*.zip  # or:
 python tale/gvo.py FILM --voice Charon            # Google voices with an API key, or:
 python tale/tale.py vo FILM --voice VOICE_ID      # ElevenLabs
 python tale/tale.py build FILM                    # final.mp4 + chapters.txt
+python tale/thumb.py FILM --top "The leaf that" --big "Started Wars" --pill "Learn English"
+python tools/titlecheck.py FILM/youtube-pack.md   # score your title ideas
 ```
+
+Picture styles: `oil` (default), `watercolour`, `storybook`, `photo`, `paper` (hand-drawn cartoon on paper, good for money and business stories), `comic`, or your own sentence. Add `--character "..."` (or `T2F_CHARACTER` in `.env`) to keep one invented main character the same in every picture. The cartoon styles always ask for invented people, never real ones.
+
+Thumbnail layouts (`tale/thumb.py --layout`): `story` (headline + red pill), `brand` (your channel name + two lines), `money` (one huge figure across the top, money amounts in red). Make two and run them in YouTube's Test & Compare.
 
 `build` renders each picture with a slow camera move and a dissolve, large captions with one highlighted word, chapter titles, your channel name, an exact voice track and a -14 LUFS mix.
 
